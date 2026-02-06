@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Will you be my Valentine?</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <style>
+    :root {
+      --bg1: #ffd6e7;
+      --bg2: #ffeef6;
+      --card: #ffffffcc;
+      --yes: #ff3b7a;
+      --yesHover: #ff1f68;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at top, var(--bg2), var(--bg1));
+      font-family: system-ui, sans-serif;
+      overflow: hidden;
+      padding: 16px;
+    }
+
+    #muteBtn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 10000;
+      background: var(--card);
+      border: none;
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      display: none; 
+    }
+
+    .heart-pulse {
+      animation: heartbeat 1.2s infinite;
+      transform-origin: center;
+    }
+
+    @keyframes heartbeat {
+      0% { transform: scale(1); }
+      14% { transform: scale(1.15); }
+      28% { transform: scale(1); }
+      42% { transform: scale(1.15); }
+      70% { transform: scale(1); }
+    }
+
+    #confettiCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    .card {
+      width: min(720px, 92vw);
+      padding: 26px 22px;
+      background: var(--card);
+      backdrop-filter: blur(10px);
+      border-radius: 22px;
+      text-align: center;
+      box-shadow: 0 18px 60px rgba(0,0,0,.15);
+      position: relative;
+      z-index: 10;
+    }
+
+    .art {
+      width: min(200px, 60vw);
+      margin: 0 auto 10px;
+      display: block;
+      filter: drop-shadow(0 5px 10px rgba(255, 59, 122, 0.3));
+    }
+
+    h1 {
+      font-size: clamp(26px, 4vw, 44px);
+      margin: 12px 0 18px;
+      color: #333;
+    }
+
+    .button-zone {
+      position: relative;
+      width: min(520px, 92%);
+      height: 150px;
+      margin: 0 auto;
+      touch-action: none;
+    }
+
+    button {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      padding: 16px 24px;
+      font-size: 18px;
+      font-weight: 800;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(0,0,0,.14);
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform .12s ease, background .12s ease;
+    }
+
+    #yesBtn {
+      left: 18%;
+      background: var(--yes);
+      color: #fff;
+    }
+    #yesBtn:hover { background: var(--yesHover); }
+
+    #noBtn {
+      left: 62%;
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .hint {
+      margin-top: 10px;
+      font-size: 13px;
+      opacity: .7;
+    }
+
+    .result {
+      display: none;
+      margin-top: 18px;
+      animation: pop .35s ease;
+    }
+
+    .result h2 {
+      font-size: clamp(28px, 5vw, 48px);
+      margin: 10px 0;
+      color: #ff3b7a;
+    }
+
+    .fireworks {
+      width: min(380px, 90vw);
+      margin: 0 auto;
+      display: block;
+      border-radius: 15px;
+    }
+
+    .signature {
+      margin-top: 20px;
+      font-size: clamp(18px, 3.5vw, 24px);
+      font-weight: 600;
+      color: #444;
+      line-height: 1.4;
+    }
+
+    @keyframes pop {
+      from { transform: scale(.96); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="confettiCanvas"></canvas>
+
+  <button id="muteBtn">🔊</button>
+
+  <audio id="bgMusic" loop>
+    <source src="tibok.mp3" type="audio/mpeg">
+  </audio>
+
+  <main class="card">
+    <svg class="art heart-pulse" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+      <path d="M16 28.27l-1.45-1.32C9.39 22.38 6 19.31 6 15.5 6 12.47 8.39 10 11.5 10c1.74 0 3.41.81 4.5 2.09C17.09 10.81 18.76 10 20.5 10 23.61 10 26 12.47 26 15.5c0 3.81-3.39 6.88-8.55 11.46L16 28.27z" 
+            fill="#ff3b7a"/>
+    </svg>
+
+    <h1 id="mainHeader">christine will you be my valentine?</h1>
+
+    <section class="button-zone" id="zone">
+      <button id="yesBtn">Yes</button>
+      <button id="noBtn">No</button>
+    </section>
+
+    <div class="hint" id="hint">“No” seems a bit shy 😈</div>
+
+    <section class="result" id="result">
+      <h2>LETS GOOO!!! 🎊</h2>
+      <img
+        class="fireworks"
+        src="https://media.giphy.com/media/Rgdqp9LBfHcByoFWxX/giphy.gif"
+        alt="Valentine Celebration"
+      />
+      <p class="signature">You make my heart Tibok 😉<br>See you tonight! - Rocky</p>
+    </section>
+  </main>
+
+  <script>
+    const zone = document.getElementById("zone");
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const result = document.getElementById("result");
+    const hint = document.getElementById("hint");
+    const mainHeader = document.getElementById("mainHeader");
+    const bgMusic = document.getElementById("bgMusic");
+    const muteBtn = document.getElementById("muteBtn");
+    const confettiCanvas = document.getElementById("confettiCanvas");
+
+    function resizeConfettiCanvas() {
+      const dpr = Math.max(1, window.devicePixelRatio || 1);
+      confettiCanvas.width = Math.floor(window.innerWidth * dpr);
+      confettiCanvas.height = Math.floor(window.innerHeight * dpr);
+    }
+    resizeConfettiCanvas();
+    window.addEventListener("resize", resizeConfettiCanvas);
+
+    const confettiInstance = confetti.create(confettiCanvas, { resize: false, useWorker: true });
+
+    function fullScreenConfetti() {
+      const end = Date.now() + 1600;
+      (function frame() {
+        confettiInstance({
+          particleCount: 12,
+          spread: 90,
+          startVelocity: 45,
+          ticks: 180,
+          origin: { x: Math.random(), y: Math.random() * 0.3 }
+        });
+        if (Date.now() < end) requestAnimationFrame(frame);
+      })();
+      setTimeout(() => {
+        confettiInstance({ particleCount: 300, spread: 140, startVelocity: 60, ticks: 220, origin: { x: 0.5, y: 0.55 } });
+      }, 300);
+    }
+
+    let yesScale = 1;
+    function growYes() {
+      yesScale = Math.min(2.2, yesScale + 0.1);
+      yesBtn.style.transform = `translateY(-50%) scale(${yesScale})`;
+    }
+
+    function moveNo(px, py) {
+      const z = zone.getBoundingClientRect();
+      const b = noBtn.getBoundingClientRect();
+      let dx = (b.left + b.width / 2) - px;
+      let dy = (b.top + b.height / 2) - py;
+      let mag = Math.hypot(dx, dy) || 1;
+      let newLeft = (b.left - z.left) + (dx / mag) * 150;
+      let newTop  = (b.top - z.top) + (dy / mag) * 150;
+      newLeft = Math.max(0, Math.min(z.width - b.width, newLeft));
+      newTop  = Math.max(0, Math.min(z.height - b.height, newTop));
+      noBtn.style.left = newLeft + "px";
+      noBtn.style.top = newTop + "px";
+      noBtn.style.transform = "none";
+      growYes();
+    }
+
+    zone.addEventListener("pointermove", e => {
+      const b = noBtn.getBoundingClientRect();
+      const d = Math.hypot((b.left + b.width / 2) - e.clientX, (b.top + b.height / 2) - e.clientY);
+      if (d < 140) moveNo(e.clientX, e.clientY);
+    });
+
+    muteBtn.addEventListener("click", () => {
+      bgMusic.muted = !bgMusic.muted;
+      muteBtn.innerText = bgMusic.muted ? "🔇" : "🔊";
+    });
+
+    yesBtn.addEventListener("click", () => {
+      bgMusic.volume = 0.5;
+      bgMusic.play().then(() => {
+        muteBtn.style.display = "block";
+      }).catch(err => console.log("Audio play blocked", err));
+
+      mainHeader.style.display = "none";
+      zone.style.display = "none";
+      hint.style.display = "none";
+      result.style.display = "block";
+      resizeConfettiCanvas();
+      fullScreenConfetti();
+    });
+  </script>
+</body>
+</html>
